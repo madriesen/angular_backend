@@ -1,6 +1,6 @@
 module.exports = mongoose => {
-  const Tag = mongoose.model(
-    "Tag",
+  const Company = mongoose.model(
+    "Company",
     mongoose.Schema(
       {
         Name: String
@@ -9,5 +9,5 @@ module.exports = mongoose => {
     )
   );
 
-  return Tag;
+  return Company;
 };

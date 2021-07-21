@@ -1,13 +1,14 @@
 module.exports = mongoose => {
-  const ArticleStatus = mongoose.model(
-    "ArticleStatus",
+  const Post = mongoose.model(
+    "Post",
     mongoose.Schema(
       {
-        Name: String
+		Content: String,
+		UserID: String,
       },
       { timestamps: true }
     )
   );
 
-  return ArticleStatus;
+  return Post;
 };

@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const db = require("./app/models");
 
+
 const app = express();
 
 var corsOptions = {
@@ -40,10 +41,10 @@ app.get("/", (req, res) => {
 });
 
 
+require("./app/routes/company.routes")(app);
+require("./app/routes/group.routes")(app);
+require("./app/routes/post.routes")(app);
 require("./app/routes/role.routes")(app);
-require("./app/routes/article.routes")(app);
-require("./app/routes/articlestatus.routes")(app);
-require("./app/routes/tag.routes")(app);
 require("./app/routes/user.routes")(app);
 
 // set port, listen for requests

@@ -8,9 +8,9 @@ db.mongoose = mongoose;
 db.url = dbConfig.url;
 
 db.users = require("./user.model.js")(mongoose);
-db.articles = require("./article.model.js")(mongoose);
+db.groups = require("./group.model.js")(mongoose);
 db.roles = require("./role.model.js")(mongoose);
-db.tags = require("./tag.model.js")(mongoose);
-db.articlestatuses = require("./articlestatus.model.js")(mongoose);
+db.posts = require("./post.model.js")(mongoose);
+db.companies = require("./company.model.js")(mongoose);
 
 module.exports = db;
