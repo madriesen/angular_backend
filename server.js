@@ -12,8 +12,6 @@ var corsOptions = {
 };
 
 
-console.log('db.url', db.url)
-
 db.mongoose
   .connect(db.url, {
     useNewUrlParser: true,
