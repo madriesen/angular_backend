@@ -18,10 +18,10 @@ db.mongoose
     useUnifiedTopology: true
   })
   .then(() => {
-    console.log("Connected to the database!");
+    console.log("Connected to the database!",db.url);
   })
   .catch(err => {
-    console.log("Cannot connect to the database!", err);
+    console.log("Cannot connect to the database!", err,db.url);
     process.exit();
   });
 
