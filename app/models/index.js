@@ -13,4 +13,35 @@ db.roles = require("./role.model.js")(mongoose);
 db.posts = require("./post.model.js")(mongoose);
 db.companies = require("./company.model.js")(mongoose);
 
+db.seed = () => {
+    db.roles.find().then(data => {
+        if( data.length > 0) return
+        const superadmin = new  db.roles({
+            Name: 'Superadmin'
+        })
+
+        const beheerder = new  db.roles({
+            Name: 'Beheerder'
+        })
+
+        const werknemer = new  db.roles({
+            Name: 'Werknemer'
+        })
+
+        const groepsbeheerder = new  db.roles({
+            Name: 'Groepsbeheerder'
+        })
+
+        const groepslid = new  db.roles({
+            name: 'Groepslid'
+        })
+
+        superadmin.save()
+        beheerder.save()
+        werknemer.save()
+        groepsbeheerder.save()
+        groepslid.save() 
+    })
+}
+
 module.exports = db;

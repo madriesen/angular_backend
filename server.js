@@ -18,6 +18,7 @@ db.mongoose
     useUnifiedTopology: true
   })
   .then(() => {
+    db.seed()
     console.log("Connected to the database!",db.url);
   })
   .catch(err => {
