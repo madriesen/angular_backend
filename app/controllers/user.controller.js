@@ -18,7 +18,7 @@ exports.create = (req, res) => {
     FirstName: req.body.FirstName,
     LastName: req.body.LastName,
     Email: req.body.Email,
-    Username: req.body.Username,
+    Username: req.body.Username ? req.body.Username : req.body.Email,
     Password: req.body.Password,
     RoleID: req.body.RoleID
   });
