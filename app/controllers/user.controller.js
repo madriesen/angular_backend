@@ -18,7 +18,7 @@ exports.create = (req, res) => {
     FirstName: req.body.FirstName,
     LastName: req.body.LastName,
     Email: req.body.Email,
-    Username: req.body.Username,
+    Username: req.body.Username ? req.body.Username : req.body.Email,
     Password: req.body.Password,
     RoleID: req.body.RoleID
   });
@@ -42,7 +42,7 @@ exports.create = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  User.findById(id)
+  User.findById(id).populate('RoleID')
     .then(data => {
       if (!data)
         res.status(404).send({ message: "Not found user with id " + id });

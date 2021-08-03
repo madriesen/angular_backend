@@ -1,3 +1,5 @@
+const { Schema } = require("mongoose");
+
 module.exports = mongoose => {
   const User = mongoose.model(
     "User",
@@ -8,7 +10,7 @@ module.exports = mongoose => {
         Email: String,
         Username: String,
         Password: String,
-        RoleID: String
+        RoleID: {type: Schema.Types.ObjectId, ref: 'Role'}
       },
       { timestamps: true }
     )

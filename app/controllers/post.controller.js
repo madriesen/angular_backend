@@ -11,8 +11,8 @@ exports.create = (req, res) => {
 
   // Create a article
   const post = new Post({
-    Content: req.body.Content,
-    UserID: req.body.UserID,
+    Content: req.body.content,
+    Author: req.body.author_id,
   });
 
   // Save article in the database
@@ -31,10 +31,10 @@ exports.create = (req, res) => {
 
 // Retrieve all posts from the database.
 exports.findAll = (req, res) => {
-  const content = req.query.Content;
-  var condition = content ? { content: { $regex: new RegExp(content), $options: "i" } } : {};
+  const content = req.query.content;
+  var condition = content ? { Content: { $regex: new RegExp(content), $options: "i" } } : {};
 
-  Post.find(condition)
+  Post.find(condition).populate('author').populate('likes').populate('comments')
     .then(data => {
       res.send(data);
     })
