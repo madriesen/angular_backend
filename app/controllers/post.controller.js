@@ -4,7 +4,7 @@ const Post = db.posts;
 // Create and Save a new article
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.Content) {
+  if (!req.body.content) {
     res.status(400).send({ message: "Posts can not be empty!" });
     return;
   }
