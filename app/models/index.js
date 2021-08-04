@@ -36,11 +36,16 @@ db.seed = () => {
             Name: 'Groepslid'
         })
 
+        const gebruiker = new db.roles({
+            Name: 'Gebruiker'
+        })
+
         superadmin.save()
         beheerder.save()
         werknemer.save()
         groepsbeheerder.save()
         groepslid.save() 
+        gebruiker.save()
     })
 }
 
