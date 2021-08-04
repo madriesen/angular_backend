@@ -33,7 +33,7 @@ db.seed = () => {
         })
 
         const groepslid = new  db.roles({
-            name: 'Groepslid'
+            Name: 'Groepslid'
         })
 
         superadmin.save()
