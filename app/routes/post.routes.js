@@ -11,7 +11,7 @@ module.exports = (app) => {
   // Retrieve all articles
   router.route('/').get([authJwt.verifyToken], posts.findAll);
 
-  router.route('/like').post([authJwt.verifyToken], posts.toggleLike);
+  router.route('/:_id/like').get([authJwt.verifyToken], posts.toggleLike);
 
   app.use('/api/Post', router);
 };

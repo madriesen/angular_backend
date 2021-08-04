@@ -49,9 +49,9 @@ exports.findAll = (req, res) => {
 };
 
 exports.toggleLike = (req, res) => {
-  const { post_id } = req.body;
+  const { _id } = req.params;
 
-  Post.findOne({ _id: post_id })
+  Post.findOne({ _id })
     .populate('Likes')
     .populate('Author')
     .populate('Comments')
