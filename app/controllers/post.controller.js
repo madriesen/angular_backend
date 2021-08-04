@@ -1,11 +1,12 @@
-const db = require("../models");
+const { posts } = require('../models');
+const db = require('../models');
 const Post = db.posts;
 
 // Create and Save a new article
 exports.create = (req, res) => {
   // Validate request
   if (!req.body.content) {
-    res.status(400).send({ message: "Posts can not be empty!" });
+    res.status(400).send({ message: 'Posts can not be empty!' });
     return;
   }
 
@@ -18,13 +19,12 @@ exports.create = (req, res) => {
   // Save article in the database
   post
     .save(post)
-    .then(data => {
+    .then((data) => {
       res.send(data);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error ss while creating the article."
+        message: err.message || 'Some error ss while creating the article.',
       });
     });
 };
@@ -32,17 +32,37 @@ exports.create = (req, res) => {
 // Retrieve all posts from the database.
 exports.findAll = (req, res) => {
   const content = req.query.content;
-  var condition = content ? { Content: { $regex: new RegExp(content), $options: "i" } } : {};
+  var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
 
-  Post.find(condition).populate('author').populate('likes').populate('comments')
-    .then(data => {
+  Post.find(condition)
+    .populate('Author')
+    .populate('Likes')
+    .populate('Comments')
+    .then((data) => {
       res.send(data);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving posts."
+        message: err.message || 'Some error occurred while retrieving posts.',
       });
+    });
+};
+
+exports.toggleLike = (req, res) => {
+  const { post_id } = req.body;
+
+  Post.findOne({ _id: post_id })
+    .populate('Likes')
+    .populate('Author')
+    .populate('Comments')
+    .then((post) => {
+      const index = post.Likes.indexOf(req.userId);
+      if (index > -1) {
+        post.Likes.pop(index, 1);
+      } else post.Likes.push(req.userId);
+
+      post.save();
+      res.status(201).send(post);
     });
 };
 

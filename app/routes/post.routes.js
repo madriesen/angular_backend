@@ -1,15 +1,17 @@
-const { authJwt } = require("../middlewares");
+const { authJwt } = require('../middlewares');
 
-module.exports = app => {
-  const posts = require("../controllers/post.controller.js");
+module.exports = (app) => {
+  const posts = require('../controllers/post.controller.js');
 
-  var router = require("express").Router();
-  
+  var router = require('express').Router();
+
   // Create a new article
-  router.post("/", posts.create);
+  router.post('/', posts.create);
 
   // Retrieve all articles
-  router.route("/").get([authJwt.verifyToken], posts.findAll);
+  router.route('/').get([authJwt.verifyToken], posts.findAll);
+
+  router.route('/like').post([authJwt.verifyToken], posts.toggleLike);
 
   app.use('/api/Post', router);
 };
