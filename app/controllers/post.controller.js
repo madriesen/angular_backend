@@ -56,10 +56,10 @@ exports.toggleLike = (req, res) => {
     .populate('Author')
     .populate('Comments')
     .then((post) => {
-      const index = post.Likes.indexOf(req.userId);
-      if (index > -1) {
-        post.Likes.pop(index, 1);
-      } else post.Likes.push(req.userId);
+      const index = post.Likes.findIndex((user) => user._id == req.userId);
+
+      if (index > -1) post.Likes.splice(index, 1);
+      else post.Likes.push(req.userId);
 
       post.save();
       res.status(201).send(post);
