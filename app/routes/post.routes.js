@@ -5,11 +5,7 @@ module.exports = (app) => {
 
   var router = require('express').Router();
 
-  // Create a new article
-  router.post('/', posts.create);
-
-  // Retrieve all articles
-  router.route('/').get([authJwt.verifyToken], posts.findAll);
+  router.route('/').get([authJwt.verifyToken], posts.findAll).post([authJwt.verifyToken], posts.create);
 
   router.route('/:_id/like').get([authJwt.verifyToken], posts.toggleLike);
 

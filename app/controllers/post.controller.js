@@ -13,14 +13,15 @@ exports.create = (req, res) => {
   // Create a article
   const post = new Post({
     Content: req.body.content,
-    Author: req.body.author_id,
+    Author: req.userId,
   });
 
   // Save article in the database
   post
     .save(post)
-    .then((data) => {
-      res.send(data);
+    .then(async (data) => {
+      const populatedPost = await data.populate('Author').populate('Likes').populate('Comments').execPopulate();
+      res.send(populatedPost);
     })
     .catch((err) => {
       res.status(500).send({
@@ -38,6 +39,7 @@ exports.findAll = (req, res) => {
     .populate('Author')
     .populate('Likes')
     .populate('Comments')
+    .sort({ createdAt: -1 })
     .then((data) => {
       res.send(data);
     })
