@@ -1,19 +1,23 @@
-const { posts } = require('../models');
 const db = require('../models');
 const Post = db.posts;
 
 // Create and Save a new article
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.content) {
+  if (!req.body.Content) {
     res.status(400).send({ message: 'Posts can not be empty!' });
     return;
   }
+  if (!req.body.UserId) {
+    res.status(400).send({ message: 'Posts must have an author!' });
+    return;
+  }
+  
 
   // Create a article
   const post = new Post({
-    Content: req.body.content,
-    Author: req.userId,
+    Content: req.body.Content,
+    Author: req.UserId,
   });
 
   // Save article in the database
@@ -32,7 +36,7 @@ exports.create = (req, res) => {
 
 // Retrieve all posts from the database.
 exports.findAll = (req, res) => {
-  const content = req.query.content;
+  const content = req.query.Content;
   var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
 
   Post.find(condition)
@@ -58,7 +62,7 @@ exports.toggleLike = (req, res) => {
     .populate('Author')
     .populate('Comments')
     .then((post) => {
-      const index = post.Likes.findIndex((user) => user._id == req.userId);
+      const index = post.Likes.findIndex((user) => user._id == req.UserId);
 
       if (index > -1) post.Likes.splice(index, 1);
       else post.Likes.push(req.userId);
