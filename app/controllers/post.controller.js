@@ -55,6 +55,7 @@ exports.findAll = (req, res) => {
 };
 
 exports.toggleLike = (req, res) => {
+ 
   const { _id } = req.params;
 
   Post.findOne({ _id })
@@ -62,11 +63,10 @@ exports.toggleLike = (req, res) => {
     .populate('Author')
     .populate('Comments')
     .then((post) => {
-      const index = post.Likes.findIndex((user) => user._id == req.UserId);
-
+      const index = post.Likes != null? post.Likes.findIndex((user) => user._id == req.UserId): 0;
       if (index > -1) post.Likes.splice(index, 1);
-      else post.Likes.push(req.userId);
-
+      else post.Likes.push(req.UserId);
+      console.log(post)
       post.save();
       res.status(201).send(post);
     });
@@ -114,25 +114,25 @@ exports.toggleLike = (req, res) => {
 //     });
 // };
 
-// // Delete a article with the specified id in the request
-// exports.delete = (req, res) => {
-//   const id = req.params.id;
+// Delete a post with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params._id;
 
-//   Article.findByIdAndRemove(id)
-//     .then(data => {
-//       if (!data) {
-//         res.status(404).send({
-//           message: `Cannot delete article with id=${id}. Maybe article was not found!`
-//         });
-//       } else {
-//         res.send({
-//           message: "article was deleted successfully!"
-//         });
-//       }
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: "Could not delete article with id=" + id
-//       });
-//     });
-// };
+  Post.findByIdAndRemove(id)
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot delete post with id=${id}. Maybe post was not found!`
+        });
+      } else {
+        res.send({
+          message: "post was deleted successfully!"
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete post with id=" + id
+      });
+    });
+};
