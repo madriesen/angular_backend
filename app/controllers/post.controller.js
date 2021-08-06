@@ -17,7 +17,7 @@ exports.create = (req, res) => {
   // Create a article
   const post = new Post({
     Content: req.body.Content,
-    Author: req.UserId,
+    Author: req.body.UserId,
   });
 
   // Save article in the database
