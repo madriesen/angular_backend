@@ -66,7 +66,6 @@ exports.toggleLike = (req, res) => {
       const index = post.Likes != null? post.Likes.findIndex((user) => user._id == req.UserId): 0;
       if (index > -1) post.Likes.splice(index, 1);
       else post.Likes.push(req.UserId);
-      console.log(post)
       post.save();
       res.status(201).send(post);
     });
