@@ -92,7 +92,7 @@ exports.authenticate = (req, res) => {
       });
 
       res.status(200).send({
-        Id: user._id,
+        _id: user._id,
         Username: user.Username,
         Email: user.Email,
         AccessToken: token

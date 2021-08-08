@@ -9,5 +9,8 @@ module.exports = (app) => {
 
   router.route('/:_id/like').get([authJwt.verifyToken], posts.toggleLike);
 
+  router.route('/:_id').delete([authJwt.verifyToken], posts.delete);
+
+
   app.use('/api/Post', router);
 };

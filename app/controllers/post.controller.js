@@ -1,19 +1,23 @@
-const { posts } = require('../models');
 const db = require('../models');
 const Post = db.posts;
 
 // Create and Save a new article
 exports.create = (req, res) => {
   // Validate request
-  if (!req.body.content) {
+  if (!req.body.Content) {
     res.status(400).send({ message: 'Posts can not be empty!' });
     return;
   }
+  if (!req.body.UserId) {
+    res.status(400).send({ message: 'Posts must have an author!' });
+    return;
+  }
+  
 
   // Create a article
   const post = new Post({
-    Content: req.body.content,
-    Author: req.userId,
+    Content: req.body.Content,
+    Author: req.body.UserId,
   });
 
   // Save article in the database
@@ -32,7 +36,7 @@ exports.create = (req, res) => {
 
 // Retrieve all posts from the database.
 exports.findAll = (req, res) => {
-  const content = req.query.content;
+  const content = req.query.Content;
   var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
 
   Post.find(condition)
@@ -51,6 +55,7 @@ exports.findAll = (req, res) => {
 };
 
 exports.toggleLike = (req, res) => {
+ 
   const { _id } = req.params;
 
   Post.findOne({ _id })
@@ -58,11 +63,9 @@ exports.toggleLike = (req, res) => {
     .populate('Author')
     .populate('Comments')
     .then((post) => {
-      const index = post.Likes.findIndex((user) => user._id == req.userId);
-
+      const index = post.Likes != null? post.Likes.findIndex((user) => user._id == req.UserId): 0;
       if (index > -1) post.Likes.splice(index, 1);
-      else post.Likes.push(req.userId);
-
+      else post.Likes.push(req.UserId);
       post.save();
       res.status(201).send(post);
     });
@@ -110,25 +113,25 @@ exports.toggleLike = (req, res) => {
 //     });
 // };
 
-// // Delete a article with the specified id in the request
-// exports.delete = (req, res) => {
-//   const id = req.params.id;
+// Delete a post with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params._id;
 
-//   Article.findByIdAndRemove(id)
-//     .then(data => {
-//       if (!data) {
-//         res.status(404).send({
-//           message: `Cannot delete article with id=${id}. Maybe article was not found!`
-//         });
-//       } else {
-//         res.send({
-//           message: "article was deleted successfully!"
-//         });
-//       }
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: "Could not delete article with id=" + id
-//       });
-//     });
-// };
+  Post.findByIdAndRemove(id)
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot delete post with id=${id}. Maybe post was not found!`
+        });
+      } else {
+        res.send({
+          message: "post was deleted successfully!"
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete post with id=" + id
+      });
+    });
+};
