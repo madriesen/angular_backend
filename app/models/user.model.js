@@ -10,6 +10,7 @@ module.exports = mongoose => {
         Email: String,
         Username: String,
         Password: String,
+        Company: {type: Schema.Types.ObjectId, ref: 'Company'},
         RoleID: {type: Schema.Types.ObjectId, ref: 'Role'}
       },
       { timestamps: true }

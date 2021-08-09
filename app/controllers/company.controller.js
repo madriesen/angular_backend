@@ -35,3 +35,32 @@ exports.findOne = (req, res) => {
         .send({ message: "Error retrieving company with id=" + id });
     });
 };
+// Create and Save a new Company
+exports.create = (req, res) => {
+  // Validate request
+  if (!req.body.Name) {
+    res.status(400).send({ message: 'Company needs a name' });
+    return;
+  }
+
+  
+
+  // Create a article
+  const company = new Company({
+    Name: req.body.Name,
+    Description: req.body.Description,
+    Address: req.body.Address,
+  });
+
+  // Save article in the database
+  company
+    .save(company)
+    .then(async (data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error ss while creating the company.',
+      });
+    });
+};

@@ -42,7 +42,7 @@ exports.create = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  User.findById(id).populate('RoleID')
+  User.findById(id).populate('RoleID').populate('Company')
     .then(data => {
       if (!data)
         res.status(404).send({ message: "Not found user with id " + id });
@@ -87,14 +87,12 @@ exports.authenticate = (req, res) => {
         });
       }
 
-      var token = jwt.sign({ id: user.id }, config.secret, {
+      var token = jwt.sign({ id: user.id, }, config.secret, {
         expiresIn: 86400 // 24 hours
       });
-
+      user
       res.status(200).send({
         _id: user._id,
-        Username: user.Username,
-        Email: user.Email,
         AccessToken: token
       });
     });

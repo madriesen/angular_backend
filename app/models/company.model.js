@@ -8,8 +8,6 @@ module.exports = mongoose => {
         Name: String,
         Address: String,
         Description: String,
-        Owner:{type: Schema.Types.ObjectId, ref: 'User'},
-        Colleagues: [{type: Schema.Types.ObjectId, ref:'User'}],
       },
       { timestamps: true }
     )
