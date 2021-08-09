@@ -6,10 +6,12 @@ module.exports = app => {
   var router = require("express").Router();
 
   // Retrieve all articlestatus
-  router.route('/').get([authJwt.verifyToken], company.findAll).post([authJwt.verifyToken], company.create);
+  router.route('/').get([authJwt.verifyToken], company.findAll);
 
   // Retrieve a single articlestatus with id
   router.get("/:id", company.findOne);
+
+  router.route('/:userId').post([authJwt.verifyToken], company.create);
 
   app.use('/api/Company', router);
 };

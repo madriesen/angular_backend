@@ -1,4 +1,6 @@
+
 const db = require("../models");
+const User = db.users;
 const Company = db.companies;
 
 
@@ -43,7 +45,7 @@ exports.create = (req, res) => {
     return;
   }
 
-  
+
 
   // Create a article
   const company = new Company({
@@ -51,11 +53,18 @@ exports.create = (req, res) => {
     Description: req.body.Description,
     Address: req.body.Address,
   });
+  
+
 
   // Save article in the database
   company
     .save(company)
     .then(async (data) => {
+      User.findById(req.UserId).then(result => {
+        result.RoleID = '610a5653ff6d891cdc44dbd5';
+        result.Company = company.id;
+        result.save(result);
+      });
       res.send(data);
     })
     .catch((err) => {

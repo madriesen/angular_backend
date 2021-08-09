@@ -18,13 +18,14 @@ exports.create = (req, res) => {
   const post = new Post({
     Content: req.body.Content,
     Author: req.body.UserId,
+    Company: req.CompanyId,
   });
 
   // Save article in the database
   post
     .save(post)
     .then(async (data) => {
-      const populatedPost = await data.populate('Author').populate('Likes').populate('Comments').execPopulate();
+      const populatedPost = await data.populate('Author').populate('Company').execPopulate();
       res.send(populatedPost);
     })
     .catch((err) => {
@@ -37,12 +38,13 @@ exports.create = (req, res) => {
 // Retrieve all posts from the database.
 exports.findAll = (req, res) => {
   const content = req.query.Content;
-  var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
+  //var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
 
-  Post.find(condition)
+  Post.find({Company: req.CompanyId})
     .populate('Author')
     .populate('Likes')
     .populate('Comments')
+    .populate('Company')
     .sort({ createdAt: -1 })
     .then((data) => {
       res.send(data);
