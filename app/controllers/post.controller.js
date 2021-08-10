@@ -24,7 +24,11 @@ exports.create = (req, res) => {
   post
     .save(post)
     .then(async (data) => {
-      const populatedPost = await data.populate('Author').populate('Likes').populate('Comments').execPopulate();
+      const populatedPost = await data
+        .populate('Author')
+        .populate('Likes')
+        .populate({ path: 'Comments', populate: { path: 'Author' } })
+        .execPopulate();
       res.send(populatedPost);
     })
     .catch((err) => {
@@ -42,7 +46,7 @@ exports.findAll = (req, res) => {
   Post.find(condition)
     .populate('Author')
     .populate('Likes')
-    .populate('Comments')
+    .populate({ path: 'Comments', populate: { path: 'Author' } })
     .sort({ createdAt: -1 })
     .then((data) => {
       res.send(data);
@@ -60,7 +64,7 @@ exports.toggleLike = (req, res) => {
   Post.findOne({ _id })
     .populate('Likes')
     .populate('Author')
-    .populate('Comments')
+    .populate({ path: 'Comments', populate: { path: 'Author' } })
     .then((post) => {
       const index = post.Likes != null ? post.Likes.findIndex((user) => user._id == req.UserId) : 0;
       if (index > -1) post.Likes.splice(index, 1);
@@ -75,9 +79,9 @@ exports.addComment = (req, res) => {
   const { Content } = req.body;
 
   const comment = new Comment({
-    content: Content,
-    author: req.UserId,
-    likes: [],
+    Content: Content,
+    Author: req.UserId,
+    Likes: [],
   });
 
   comment.save((error, comment) => {
@@ -86,13 +90,18 @@ exports.addComment = (req, res) => {
     Post.findOne({ _id })
       .populate('Likes')
       .populate('Author')
-      .populate('Comments')
+      .populate({ path: 'Comments', populate: { path: 'Author' } })
       .then((post) => {
         post.Comments.push(comment._id);
 
         post.save((error) => {
           if (error) throw new Error('Comment kon niet worden geplaatst!');
-          res.status(201).send(post);
+          post
+            .populate('Likes')
+            .populate('Author')
+            .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
+              res.status(201).send(post);
+            });
         });
       });
   });
