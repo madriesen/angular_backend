@@ -1,5 +1,6 @@
 const db = require('../models');
 const Post = db.posts;
+const Comment = db.comments;
 
 // Create and Save a new article
 exports.create = (req, res) => {
@@ -12,7 +13,6 @@ exports.create = (req, res) => {
     res.status(400).send({ message: 'Posts must have an author!' });
     return;
   }
-  
 
   // Create a article
   const post = new Post({
@@ -24,7 +24,11 @@ exports.create = (req, res) => {
   post
     .save(post)
     .then(async (data) => {
-      const populatedPost = await data.populate('Author').populate('Likes').populate('Comments').execPopulate();
+      const populatedPost = await data
+        .populate('Author')
+        .populate('Likes')
+        .populate({ path: 'Comments', populate: { path: 'Author' } })
+        .execPopulate();
       res.send(populatedPost);
     })
     .catch((err) => {
@@ -42,7 +46,7 @@ exports.findAll = (req, res) => {
   Post.find(condition)
     .populate('Author')
     .populate('Likes')
-    .populate('Comments')
+    .populate({ path: 'Comments', populate: { path: 'Author' } })
     .sort({ createdAt: -1 })
     .then((data) => {
       res.send(data);
@@ -55,20 +59,50 @@ exports.findAll = (req, res) => {
 };
 
 exports.toggleLike = (req, res) => {
- 
   const { _id } = req.params;
 
-  Post.findOne({ _id })
-    .populate('Likes')
-    .populate('Author')
-    .populate('Comments')
-    .then((post) => {
-      const index = post.Likes != null? post.Likes.findIndex((user) => user._id == req.UserId): 0;
-      if (index > -1) post.Likes.splice(index, 1);
-      else post.Likes.push(req.UserId);
-      post.save();
-      res.status(201).send(post);
+  Post.findOne({ _id }).then((post) => {
+    const index = post.Likes != null ? post.Likes.findIndex((user) => user._id == req.UserId) : 0;
+    if (index > -1) post.Likes.splice(index, 1);
+    else post.Likes.push(req.UserId);
+    post.save().then((post) => {
+      post
+        .populate('Likes')
+        .populate('Author')
+        .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
+          res.status(201).send(post);
+        });
     });
+  });
+};
+
+exports.addComment = (req, res) => {
+  const { _id } = req.params;
+  const { Content } = req.body;
+
+  const comment = new Comment({
+    Content: Content,
+    Author: req.UserId,
+    Likes: [],
+  });
+
+  comment.save((error, comment) => {
+    if (error) throw new Error('Comment kon niet geplaatst worden!');
+
+    Post.findOne({ _id }).then((post) => {
+      post.Comments.push(comment._id);
+
+      post.save((error) => {
+        if (error) throw new Error('Comment kon niet worden geplaatst!');
+        post
+          .populate('Likes')
+          .populate('Author')
+          .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
+            res.status(201).send(post);
+          });
+      });
+    });
+  });
 };
 
 // // Find a single article with an id
@@ -118,20 +152,20 @@ exports.delete = (req, res) => {
   const id = req.params._id;
 
   Post.findByIdAndRemove(id)
-    .then(data => {
+    .then((data) => {
       if (!data) {
         res.status(404).send({
-          message: `Cannot delete post with id=${id}. Maybe post was not found!`
+          message: `Cannot delete post with id=${id}. Maybe post was not found!`,
         });
       } else {
         res.send({
-          message: "post was deleted successfully!"
+          message: 'post was deleted successfully!',
         });
       }
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message: "Could not delete post with id=" + id
+        message: 'Could not delete post with id=' + id,
       });
     });
 };
