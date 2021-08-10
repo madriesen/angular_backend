@@ -1,4 +1,8 @@
+
+const { roles } = require("../models");
 const db = require("../models");
+const Role = db.roles;
+const User = db.users;
 const Company = db.companies;
 
 
@@ -33,5 +37,44 @@ exports.findOne = (req, res) => {
       res
         .status(500)
         .send({ message: "Error retrieving company with id=" + id });
+    });
+};
+// Create and Save a new Company
+exports.create = (req, res) => {
+  // Validate request
+  if (!req.body.Name) {
+    res.status(400).send({ message: 'Company needs a name' });
+    return;
+  }
+
+
+
+  // Create a article
+  const company = new Company({
+    Name: req.body.Name,
+    Description: req.body.Description,
+    Address: req.body.Address,
+  });
+
+
+
+  // Save article in the database
+  company
+    .save(company)
+    .then(async (data) => {
+      User.findById(req.UserId).then(result => {
+        Role.find({ Name: 'Superadmin' }).then((role) => {
+          result.RoleID = role[0]._id;
+          result.Company = company.id;
+          result.save(result);
+        })
+
+      });
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error ss while creating the company.',
+      });
     });
 };

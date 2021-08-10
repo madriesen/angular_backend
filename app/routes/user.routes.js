@@ -11,10 +11,8 @@ module.exports = app => {
   router.post("/authenticate", users.authenticate);
 
   // Retrieve a single user with id
-  router.get("/:id", [authJwt.verifyToken], users.findOne);
+  router.route("/:id").get([authJwt.verifyToken], users.findOne).put([authJwt.verifyToken], users.update).delete([authJwt.verifyToken], users.delete);
 
-  // Delete a user with id
-  router.delete("/:id", users.delete);
 
   app.use('/api/User', router);
   

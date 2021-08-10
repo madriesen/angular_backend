@@ -42,7 +42,7 @@ exports.create = (req, res) => {
 exports.findOne = (req, res) => {
   const id = req.params.id;
 
-  User.findById(id).populate('RoleID')
+  User.findById(id).populate('RoleID').populate('Company')
     .then(data => {
       if (!data)
         res.status(404).send({ message: "Not found user with id " + id });
@@ -86,16 +86,13 @@ exports.authenticate = (req, res) => {
           message: "Invalid Password!"
         });
       }
-
-      var token = jwt.sign({ id: user.id }, config.secret, {
+      var token = jwt.sign({ id: user.id, CompanyId:user.Company? user.Company:'' }, config.secret, {
         expiresIn: 86400 // 24 hours
       });
-
       res.status(200).send({
         _id: user._id,
-        Username: user.Username,
-        Email: user.Email,
-        AccessToken: token
+        AccessToken: token,
+        CompanyId:user.Company? user.Company:''
       });
     });
 };
@@ -119,6 +116,30 @@ exports.delete = (req, res) => {
     .catch(err => {
       res.status(500).send({
         message: "Could not delete user with id=" + id
+      });
+    });
+};
+// Update a article by the id in the request
+exports.update = (req, res) => {
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!"
+    });
+  }
+
+  const id = req.params.id;
+
+  User.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update user with id=${id}. Maybe user was not found!`
+        });
+      } else res.send({ message: "user was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating user with id=" + id
       });
     });
 };

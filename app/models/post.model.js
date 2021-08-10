@@ -7,6 +7,7 @@ module.exports = (mongoose) => {
       Author: { type: Schema.Types.ObjectId, ref: 'User' },
       Likes: [{ type: Schema.Types.ObjectId, ref: 'User' }],
       Comments: [{ type: Schema.Types.ObjectId, ref: 'Comment' }],
+      Company: { type: Schema.Types.ObjectId, ref: 'Company' },
     },
     { timestamps: true }
   );
