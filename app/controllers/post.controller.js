@@ -14,12 +14,15 @@ exports.create = (req, res) => {
     return;
   }
 
-  // Create a article
-  const post = new Post({
+  const newPostVariables = {
     Content: req.body.Content,
-    Company: req.CompanyId,
     Author: req.UserId,
-  });
+  };
+
+  if (req.CompanyId) newPostVariables.CompanyId = req.CompanyId;
+
+  // Create a article
+  const post = new Post(newPostVariables);
 
   // Save article in the database
   post

@@ -1,18 +1,18 @@
-const jwt = require("jsonwebtoken");
-const config = require("../config/auth.config.js");
-const db = require("../models");
+const jwt = require('jsonwebtoken');
+const config = require('../config/auth.config.js');
+const db = require('../models');
 const User = db.user;
 
 verifyToken = (req, res, next) => {
-  let token = req.headers['authorization'] ? req.headers['authorization'].split(' ')[1] : req.headers["x-access-token"];
+  let token = req.headers['authorization'] ? req.headers['authorization'].split(' ')[1] : req.headers['x-access-token'];
 
   if (!token) {
-    return res.status(403).send({ message: "No token provided!" });
+    return res.status(403).send({ message: 'No token provided!' });
   }
 
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      return res.status(401).send({ message: "Unauthorized!" });
+      return res.status(401).send({ message: 'Unauthorized!' });
     }
     req.UserId = decoded.id;
     req.CompanyId = decoded.CompanyId;
@@ -20,8 +20,7 @@ verifyToken = (req, res, next) => {
   });
 };
 
-
 const authJwt = {
-  verifyToken
+  verifyToken,
 };
 module.exports = authJwt;
