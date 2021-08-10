@@ -61,17 +61,19 @@ exports.findAll = (req, res) => {
 exports.toggleLike = (req, res) => {
   const { _id } = req.params;
 
-  Post.findOne({ _id })
-    .populate('Likes')
-    .populate('Author')
-    .populate({ path: 'Comments', populate: { path: 'Author' } })
-    .then((post) => {
-      const index = post.Likes != null ? post.Likes.findIndex((user) => user._id == req.UserId) : 0;
-      if (index > -1) post.Likes.splice(index, 1);
-      else post.Likes.push(req.UserId);
-      post.save();
-      res.status(201).send(post);
+  Post.findOne({ _id }).then((post) => {
+    const index = post.Likes != null ? post.Likes.findIndex((user) => user._id == req.UserId) : 0;
+    if (index > -1) post.Likes.splice(index, 1);
+    else post.Likes.push(req.UserId);
+    post.save().then((post) => {
+      post
+        .populate('Likes')
+        .populate('Author')
+        .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
+          res.status(201).send(post);
+        });
     });
+  });
 };
 
 exports.addComment = (req, res) => {
@@ -87,23 +89,19 @@ exports.addComment = (req, res) => {
   comment.save((error, comment) => {
     if (error) throw new Error('Comment kon niet geplaatst worden!');
 
-    Post.findOne({ _id })
-      .populate('Likes')
-      .populate('Author')
-      .populate({ path: 'Comments', populate: { path: 'Author' } })
-      .then((post) => {
-        post.Comments.push(comment._id);
+    Post.findOne({ _id }).then((post) => {
+      post.Comments.push(comment._id);
 
-        post.save((error) => {
-          if (error) throw new Error('Comment kon niet worden geplaatst!');
-          post
-            .populate('Likes')
-            .populate('Author')
-            .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
-              res.status(201).send(post);
-            });
-        });
+      post.save((error) => {
+        if (error) throw new Error('Comment kon niet worden geplaatst!');
+        post
+          .populate('Likes')
+          .populate('Author')
+          .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
+            res.status(201).send(post);
+          });
       });
+    });
   });
 };
 
