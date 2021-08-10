@@ -89,7 +89,6 @@ exports.authenticate = (req, res) => {
       var token = jwt.sign({ id: user.id, CompanyId:user.Company? user.Company:'' }, config.secret, {
         expiresIn: 86400 // 24 hours
       });
-      user
       res.status(200).send({
         _id: user._id,
         AccessToken: token,
