@@ -30,6 +30,8 @@ exports.create = (req, res) => {
         .populate({ path: 'Comments', populate: { path: 'Author' } })
         .execPopulate();
       res.send(populatedPost);
+
+      global.io.emit('post_create', post);
     })
     .catch((err) => {
       res.status(500).send({
@@ -70,6 +72,7 @@ exports.toggleLike = (req, res) => {
         .populate('Likes')
         .populate('Author')
         .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
+          global.io.emit('like_toggle');
           res.status(201).send(post);
         });
     });
@@ -98,6 +101,7 @@ exports.addComment = (req, res) => {
           .populate('Likes')
           .populate('Author')
           .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
+            global.io.emit('comment_create');
             res.status(201).send(post);
           });
       });
