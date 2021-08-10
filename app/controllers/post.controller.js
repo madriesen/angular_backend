@@ -25,12 +25,11 @@ exports.create = (req, res) => {
   post
     .save(post)
     .then(async (data) => {
-
       const populatedPost = await data
         .populate('Author')
         .populate('Likes')
         .populate('Company')
-        .populate({ path: 'Comments', populate: { path: 'Author' } })
+        .populate({ path: 'Comments', populate: { path: 'Author' } });
 
       res.send(populatedPost);
 
@@ -48,10 +47,11 @@ exports.findAll = (req, res) => {
   const content = req.query.Content;
   //var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
 
-  Post.find({Company: req.CompanyId})
-  .populate('Author')
-  .populate('Likes')
-  .populate('Company')
+  Post.find({ Company: req.CompanyId })
+    .populate('Author')
+    .populate('Likes')
+    .populate('Company')
+    .populate({ path: 'Comments', populate: { path: 'Author' } })
     .sort({ createdAt: -1 })
     .then((data) => {
       res.send(data);
@@ -74,6 +74,7 @@ exports.toggleLike = (req, res) => {
       post
         .populate('Likes')
         .populate('Author')
+        .populate('Company')
         .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
           global.io.emit('like_toggle');
           res.status(201).send(post);
