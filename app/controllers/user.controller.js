@@ -92,7 +92,8 @@ exports.authenticate = (req, res) => {
       user
       res.status(200).send({
         _id: user._id,
-        AccessToken: token
+        AccessToken: token,
+        CompanyId:user.Company? user.Company:''
       });
     });
 };

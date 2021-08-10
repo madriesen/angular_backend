@@ -35,7 +35,7 @@ exports.create = (req, res) => {
     });
 };
 
-// Retrieve all posts from the database.
+// Retrieve all posts from the database of your company
 exports.findAll = (req, res) => {
   const content = req.query.Content;
   //var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
