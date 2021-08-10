@@ -1,5 +1,7 @@
 
+const { roles } = require("../models");
 const db = require("../models");
+const Role = db.roles;
 const User = db.users;
 const Company = db.companies;
 
@@ -53,7 +55,7 @@ exports.create = (req, res) => {
     Description: req.body.Description,
     Address: req.body.Address,
   });
-  
+
 
 
   // Save article in the database
@@ -61,9 +63,12 @@ exports.create = (req, res) => {
     .save(company)
     .then(async (data) => {
       User.findById(req.UserId).then(result => {
-        result.RoleID = '610a5653ff6d891cdc44dbd5';
-        result.Company = company.id;
-        result.save(result);
+        Role.find({ Name: 'Superadmin' }).then((role) => {
+          result.RoleID = role[0]._id;
+          result.Company = company.id;
+          result.save(result);
+        })
+
       });
       res.send(data);
     })

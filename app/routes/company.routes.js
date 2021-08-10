@@ -11,7 +11,7 @@ module.exports = app => {
   // Retrieve a single articlestatus with id
   router.get("/:id", company.findOne);
 
-  router.route('/:userId').post([authJwt.verifyToken], company.create);
+  router.route('/').post([authJwt.verifyToken], company.create);
 
   app.use('/api/Company', router);
 };
