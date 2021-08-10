@@ -44,10 +44,9 @@ exports.create = (req, res) => {
 
 // Retrieve all posts from the database of your company
 exports.findAll = (req, res) => {
-  const content = req.query.Content;
-  //var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
+  const condition = req.CompanyId ? { Company: req.CompanyId } : {};
 
-  Post.find({ Company: req.CompanyId })
+  Post.find(condition)
     .populate('Author')
     .populate('Likes')
     .populate('Company')
