@@ -47,11 +47,9 @@ exports.findAll = (req, res) => {
   //var condition = content ? { Content: { $regex: new RegExp(content), $options: 'i' } } : {};
 
   Post.find({Company: req.CompanyId})
-    .populate('Author')
-    .populate('Likes')
-    .populate('Company')
-    .populate({ path: 'Comments', populate: { path: 'Author' } })
-
+  .populate('Author')
+  .populate('Likes')
+  .populate('Company')
     .sort({ createdAt: -1 })
     .then((data) => {
       res.send(data);
