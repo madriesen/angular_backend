@@ -19,7 +19,7 @@ exports.create = (req, res) => {
     LastName: req.body.LastName,
     Email: req.body.Email,
     Username: req.body.Username ? req.body.Username : req.body.Email,
-    Password: req.body.Password,
+    Password: bcrypt.hashSync(req.body.Password),
     RoleID: req.body.RoleID,
   });
 
