@@ -9,7 +9,7 @@ exports.create = (req, res) => {
     res.status(400).send({ message: 'Posts can not be empty!' });
     return;
   }
-  if (!req.body.UserId) {
+  if (!req.UserId) {
     res.status(400).send({ message: 'Posts must have an author!' });
     return;
   }
@@ -17,8 +17,8 @@ exports.create = (req, res) => {
   // Create a article
   const post = new Post({
     Content: req.body.Content,
-    Author: req.body.UserId,
     Company: req.CompanyId,
+    Author: req.UserId,
   });
 
   // Save article in the database
