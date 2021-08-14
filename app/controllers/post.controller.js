@@ -19,15 +19,18 @@ exports.create = (req, res) => {
     Author: req.UserId,
   };
 
-  if (req.CompanyId) newPostVariables.CompanyId = req.CompanyId;
+  if (req.CompanyId) newPostVariables.Company = req.CompanyId;
+
+  console.log('newPostVariables', newPostVariables);
 
   // Create a article
   const post = new Post(newPostVariables);
 
+  console.log('newPost', post);
+
   // Save article in the database
   post.save((error, post) => {
     if (error) throw new Error('Post kon niet geplaatst worden!');
-    console.log('post', post);
     post
       .populate('Author')
       .populate('Likes')
@@ -41,7 +44,7 @@ exports.create = (req, res) => {
 
 // Retrieve all posts from the database of your company
 exports.findAll = (req, res) => {
-  const condition = req.CompanyId ? { Company: req.CompanyId } : {};
+  const condition = req.CompanyId ? { Company: req.CompanyId } : { Company: null };
 
   Post.find(condition)
     .populate('Author')

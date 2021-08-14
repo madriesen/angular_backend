@@ -47,7 +47,7 @@ exports.findOne = (req, res) => {
       if (!data) res.status(404).send({ message: 'Not found user with id ' + id });
       else res.send(data);
     })
-    .catch((err) => {
+    .catch(() => {
       res.status(500).send({ message: 'Error retrieving user with id=' + id });
     });
 };

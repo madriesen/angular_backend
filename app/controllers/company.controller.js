@@ -1,24 +1,21 @@
-
-const { roles } = require("../models");
-const db = require("../models");
+const { roles } = require('../models');
+const db = require('../models');
 const Role = db.roles;
 const User = db.users;
 const Company = db.companies;
 
-
 // Retrieve all companies from the database.
 exports.findAll = (req, res) => {
   const name = req.query.Name;
-  var condition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
+  var condition = name ? { name: { $regex: new RegExp(name), $options: 'i' } } : {};
 
   Company.find(condition)
-    .then(data => {
+    .then((data) => {
       res.send(data);
     })
-    .catch(err => {
+    .catch((err) => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while retrieving companies."
+        message: err.message || 'Something went wrong while retrieving companies.',
       });
     });
 };
@@ -28,15 +25,12 @@ exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Company.findById(id)
-    .then(data => {
-      if (!data)
-        res.status(404).send({ message: "Not found company with id " + id });
+    .then((data) => {
+      if (!data) res.status(404).send({ message: 'Not found company with id ' + id });
       else res.send(data);
     })
-    .catch(err => {
-      res
-        .status(500)
-        .send({ message: "Error retrieving company with id=" + id });
+    .catch((err) => {
+      res.status(500).send({ message: 'Error retrieving company with id=' + id });
     });
 };
 // Create and Save a new Company
@@ -47,34 +41,29 @@ exports.create = (req, res) => {
     return;
   }
 
-
-
-  // Create a article
+  // Create a company
   const company = new Company({
     Name: req.body.Name,
     Description: req.body.Description,
     Address: req.body.Address,
   });
 
-
-
-  // Save article in the database
+  // Save company and user in the database
   company
     .save(company)
     .then(async (data) => {
-      User.findById(req.UserId).then(result => {
+      User.findById(req.UserId).then((user) => {
         Role.find({ Name: 'Superadmin' }).then((role) => {
-          result.RoleID = role[0]._id;
-          result.Company = company.id;
-          result.save(result);
-        })
-
+          user.RoleID = role[0]._id;
+          user.Company = company.id;
+          user.save();
+        });
       });
       res.send(data);
     })
     .catch((err) => {
       res.status(500).send({
-        message: err.message || 'Some error ss while creating the company.',
+        message: err.message || 'Something went wrong while creating the company.',
       });
     });
 };
