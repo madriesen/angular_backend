@@ -21,12 +21,8 @@ exports.create = (req, res) => {
 
   if (req.CompanyId) newPostVariables.Company = req.CompanyId;
 
-  console.log('newPostVariables', newPostVariables);
-
   // Create a article
   const post = new Post(newPostVariables);
-
-  console.log('newPost', post);
 
   // Save article in the database
   post.save((error, post) => {
@@ -35,8 +31,8 @@ exports.create = (req, res) => {
       .populate('Author')
       .populate('Likes')
       .populate('Company')
-      .populate({ path: 'Comments', populate: { path: 'Author' } }, (post) => {
-        global.io.emit('post_create', post);
+      .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
+        global.io.emit('post_create', post._id);
         res.send(post);
       });
   });
@@ -75,7 +71,7 @@ exports.toggleLike = (req, res) => {
         .populate('Author')
         .populate('Company')
         .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
-          global.io.emit('like_toggle');
+          global.io.emit('like_toggle', post._id);
           res.status(201).send(post);
         });
     });
@@ -104,7 +100,7 @@ exports.addComment = (req, res) => {
           .populate('Likes')
           .populate('Author')
           .populate({ path: 'Comments', populate: { path: 'Author' } }, () => {
-            global.io.emit('comment_create');
+            global.io.emit('comment_create', post._id);
             res.status(201).send(post);
           });
       });
@@ -112,22 +108,25 @@ exports.addComment = (req, res) => {
   });
 };
 
-// // Find a single article with an id
-// exports.findOne = (req, res) => {
-//   const id = req.params.id;
+// Find a single article with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
 
-//   Article.findById(id)
-//     .then(data => {
-//       if (!data)
-//         res.status(404).send({ message: "Not found article with id " + id });
-//       else res.send(data);
-//     })
-//     .catch(err => {
-//       res
-//         .status(500)
-//         .send({ message: "Error retrieving article with id=" + id });
-//     });
-// };
+  Post.findOne({ _id: id })
+    .populate('Author')
+    .populate('Likes')
+    .populate('Company')
+    .populate({ path: 'Comments', populate: { path: 'Author' } })
+    .sort({ createdAt: -1 })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || 'Some error occurred while retrieving posts.',
+      });
+    });
+};
 
 // // Update a article by the id in the request
 // exports.update = (req, res) => {

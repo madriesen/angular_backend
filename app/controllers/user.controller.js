@@ -48,7 +48,6 @@ exports.findOne = (req, res) => {
     .populate('RoleID')
     .populate('Company')
     .then((data) => {
-      console.log('data', data);
       if (!data) res.status(404).send({ message: 'Not found user with id ' + id });
       else res.send(data);
     })

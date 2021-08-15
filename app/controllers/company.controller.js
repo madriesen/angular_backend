@@ -31,7 +31,6 @@ exports.findOne = (req, res) => {
       else res.status(200).send(data);
     })
     .catch((err) => {
-      console.log('error', err);
       res.status(500).send({ message: 'Error retrieving company with id=' + id });
     });
 };
