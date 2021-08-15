@@ -10,10 +10,8 @@ module.exports = (app) => {
 
   router.route('/').post([authJwt.verifyToken], company.create);
 
-  router
-    .route('/:id')
-    .get([authJwt.verifyToken], company.findOne)
-    .post([authJwt.verifyToken], company.addUserToCompany);
+  router.route('/:id').get([authJwt.verifyToken], company.findOne).post([authJwt.verifyToken], company.update);
+  router.route('/:id/add-user').post([authJwt.verifyToken], company.addUserToCompany);
 
   app.use('/api/Company', router);
 };

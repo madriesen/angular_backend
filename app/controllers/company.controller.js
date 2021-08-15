@@ -70,6 +70,25 @@ exports.create = (req, res) => {
     });
 };
 
+exports.update = (req, res) => {
+  const { Name, Address } = req.body;
+  const Description = req.body.Description || '';
+
+  if (!Name || !Address) return res.status(401).send('A company needs a name and an address!');
+
+  Company.findById(req.params.id).then((company) => {
+    if (!company) return res.status(404).send('No company found with id: ' + req.params.id);
+
+    company.Name = Name;
+    company.Address = Address;
+    company.Description = Description;
+
+    company.save().then((company) => {
+      return res.send(company);
+    });
+  });
+};
+
 exports.addUserToCompany = (req, res) => {
   const userId = req.body.UserId;
   // Validate request
