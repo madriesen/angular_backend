@@ -25,11 +25,13 @@ exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Company.findById(id)
+    .populate('Users')
     .then((data) => {
       if (!data) res.status(404).send({ message: 'Not found company with id ' + id });
-      else res.send(data);
+      else res.status(200).send(data);
     })
     .catch((err) => {
+      console.log('error', err);
       res.status(500).send({ message: 'Error retrieving company with id=' + id });
     });
 };
@@ -51,7 +53,7 @@ exports.create = (req, res) => {
   // Save company and user in the database
   company
     .save(company)
-    .then(async (data) => {
+    .then((data) => {
       User.findById(req.UserId).then((user) => {
         Role.find({ Name: 'Superadmin' }).then((role) => {
           user.RoleID = role[0]._id;
@@ -65,5 +67,30 @@ exports.create = (req, res) => {
       res.status(500).send({
         message: err.message || 'Something went wrong while creating the company.',
       });
+    });
+};
+
+exports.addUserToCompany = (req, res) => {
+  const userId = req.body.UserId;
+  // Validate request
+  if (!userId) {
+    res.status(400).send({ message: "Without userId I can't add a user to the company!" });
+    return;
+  }
+
+  User.findById(userId)
+    .then((user) => {
+      if (!user) res.status(404).send({ message: 'Not found user with id ' + userId });
+      user.Company = req.params.id;
+      user.save().then((user) => {
+        Company.findById(user.Company)
+          .populate('Users')
+          .then((company) => {
+            res.send(company);
+          });
+      });
+    })
+    .catch(() => {
+      res.status(500).send({ message: 'Error retrieving user with id=' + userId });
     });
 };

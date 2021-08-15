@@ -13,27 +13,30 @@ exports.create = (req, res) => {
     return;
   }
 
-  // Create a user
-  const user = new User({
-    FirstName: req.body.FirstName,
-    LastName: req.body.LastName,
-    Email: req.body.Email,
-    Username: req.body.Username ? req.body.Username : req.body.Email,
-    Password: bcrypt.hashSync(req.body.Password),
-    RoleID: req.body.RoleID,
+  Role.findOne({ Name: 'Gebruiker' }).then((role) => {
+    const user = new User({
+      FirstName: req.body.FirstName,
+      LastName: req.body.LastName,
+      Email: req.body.Email,
+      Username: req.body.Username ? req.body.Username : req.body.Email,
+      Password: bcrypt.hashSync(req.body.Password),
+      RoleID: role._id,
+    });
+
+    // Save user in the database
+    user
+      .save(user)
+      .then((data) => {
+        res.send(data);
+      })
+      .catch((err) => {
+        res.status(500).send({
+          message: err.message || 'Some error occurred while creating the user.',
+        });
+      });
   });
 
-  // Save user in the database
-  user
-    .save(user)
-    .then((data) => {
-      res.send(data);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || 'Some error occurred while creating the user.',
-      });
-    });
+  // Create a user
 };
 
 // Find a single user with an id
@@ -44,12 +47,22 @@ exports.findOne = (req, res) => {
     .populate('RoleID')
     .populate('Company')
     .then((data) => {
+      console.log('data', data);
       if (!data) res.status(404).send({ message: 'Not found user with id ' + id });
       else res.send(data);
     })
     .catch(() => {
       res.status(500).send({ message: 'Error retrieving user with id=' + id });
     });
+};
+
+exports.findOneByEmail = (req, res) => {
+  const email = req.params.email;
+
+  User.findOne({ Email: email, Company: null }).then((user) => {
+    if (!user) res.status(404).send({ message: 'Not found user with email ' + email });
+    else res.send(user);
+  });
 };
 
 exports.authenticate = (req, res) => {
