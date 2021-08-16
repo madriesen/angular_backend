@@ -1,4 +1,4 @@
-# newsapp_jwt
+# Martijnbook backend
  
 NewsApp Backend implementation with JWT based on Node.js, Express-Framework, MongoDB
 
